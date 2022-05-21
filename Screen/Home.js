@@ -4,6 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import musicImg from './asset/Image/images.jpg';
 
+
 const Home = () => {
   return (
     <View style={styles.body}>
@@ -30,7 +31,7 @@ const Home = () => {
               <AntDesign
                 name="caretright"
                 size={30}
-                color=""
+                color="#ECCC68"
                 style={styles.playicon}
               />
             </View>
@@ -197,6 +198,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     marginLeft: 10,
     marginTop: 20,
+    shadowColor:"#fff",
+    shadowOffset:{
+      width:5,
+      height:5,
+    },
+    shadowOpacity:5,
+    shadowRadius:3.04,
+    elevation:10
   },
   playicon: {
     marginLeft: 10,
@@ -219,9 +228,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     flexDirection: 'row',
     borderRadius: 50,
-    shadowColor: '#636e72',
-    shadowRadius: 50,
-    shadowOffset: 20,
+    shadowColor:"#fff",
+    shadowOffset:{
+      width:5,
+      height:5,
+    },
+    shadowOpacity:5,
+    shadowRadius:3.04,
+    elevation:5
   },
   cdlimg: {
     width: 45,

@@ -1,10 +1,52 @@
-import {View, Text, StyleSheet, Image} from 'react-native';
-import React from 'react';
+import {View, Text, StyleSheet, Image, FlatList,Animated,TouchableOpacity,Dimensions,scrollTopOffset} from 'react-native';
+import React ,{useEffect,useRef,useState}from 'react';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import musicImg from './asset/Image/images.jpg';
+import Slider from 'react-native-slider';
+import {song} from './data';
+
+
+
+const {width,height} =Dimensions.get('window')
+
 const PlayScreen = () => {
+    
+  const songSlider =useRef(null)
+  const [songIndex,setSongIndex] =useState(0)
+  const scrollX=useRef(new Animated.Value(0)).current;
+  
+  useEffect(()=>{
+     scrollX.addListener(({value})=>{
+    //  console.log('Scroll X',scrollX)
+    //  console.log('Device Width',scrollX.width)
+     const index =Math.round(value/width)
+    //  console.log('index:',index)
+    setSongIndex(index)
+     })
+    return() =>{
+     scrollX.removeAllListeners()
+    }
+  },[]);
+
+
+
+  const renderSong = ({index, item}) => {
+    return (
+      <Animated.View style={{
+        width:width
+      }}>
+        <View style={styles.txtDesc}>
+          <Feather name="music" size={25} style={styles.musicIcon} />
+          <Text style={styles.Songname}>{song[songIndex].title}</Text>
+        </View>
+        <Text style={styles.txtNameSinger}>{song[songIndex].artist} & {song[songIndex].album}</Text>
+      </Animated.View>
+    );
+  };
+
   return (
     <View style={styles.body}>
       <View style={styles.headTop}>
@@ -26,17 +68,58 @@ const PlayScreen = () => {
       </View>
       <View style={styles.txtBox}>
         <View style={styles.detailbox}>
-          <View style={styles.txtDesc}>
-            <Feather name="music" size={25} style={styles.musicIcon} />
-            <Text style={styles.Songname}>Kesariya</Text>
-          </View>
-          <Text style={styles.txtNameSinger}>Arman Malik & Sraya khosal</Text>
+          <Animated.FlatList
+           ref={songSlider}
+            data={song}
+            renderItem={renderSong}
+            keyExtractor={item => item.id}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+             [{nativeEvent:{
+               contentOffset:{x:scrollX}
+             }}],
+              {useNativeDriver:true}
+            )}
+          />
         </View>
-        <View style={styles.circleBox}>
-          <FontAwesome name="heart" size={30} color="#fff" />
+        
+      </View>
+      <View style={styles.playsystem}>
+        <View style={styles.backbtn}>
+        <TouchableOpacity>
+          <AntDesign name="banckward" color="#ECCC68" size={35} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.playbtn}>
+        <TouchableOpacity>
+          <AntDesign name="caretright" color="#000" size={40} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.nextbtn}>
+          <TouchableOpacity >
+          <AntDesign name="forward" color="#ECCC68" size={35} />
+          </TouchableOpacity>
         </View>
       </View>
-      <View></View>
+      <View style={styles.progressbox}>
+        <Slider
+          style={styles.progressContainer}
+          value={10}
+          minimumValue={10}
+          maximumValue={100}
+          thumbTintColor="#ECCC68"
+          minimumTrackTintColor="#ECCC68"
+          miximumTrackTintColor="#fff"
+          onSlidingComplete={() => {}}
+        />
+      </View>
+      <View style={styles.progressLabelContainer}>
+        <Text style={styles.progressLabelContainertxt}>0:00</Text>
+        <Text style={styles.progressLabelContainertxt}>0:00</Text>
+      </View>
     </View>
   );
 };
@@ -87,9 +170,10 @@ const styles = StyleSheet.create({
   },
   txtDesc: {
     flexDirection: 'row',
+    
   },
   detailbox: {
-    width: 250,
+   
     flexDirection: 'column',
   },
   musicIcon: {
@@ -118,6 +202,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  playsystem: {
+    marginTop: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backbtn: {
+    marginLeft: 50,
+  },
+  playbtn: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#ECCC68',
+    borderRadius: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nextbtn: {
+    marginRight: 50,
+  },
+  progressbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressContainer: {
+    width: 340,
+  },
+  progressLabelContainer: {
+    width: 340,
+    flexDirection: 'row',
+    marginLeft: 10,
+    justifyContent: 'space-between',
+  },
+  progressLabelContainertxt: {
+    color: '#fff',
   },
 });
 

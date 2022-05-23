@@ -31,8 +31,17 @@ const PlayScreen = () => {
     }
   },[]);
 
-
-
+   const skipNext =()=>{
+     songSlider.current.scrollTopOffset({
+       offset:(songIndex+1)*width,
+     })
+   }
+   
+   const skipPrevious =()=>{
+    songSlider.current.scrollTopOffset({
+      offset:(songIndex-1)*width,
+    })
+  }
   const renderSong = ({index, item}) => {
     return (
       <Animated.View style={{

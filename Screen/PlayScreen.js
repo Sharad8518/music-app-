@@ -8,22 +8,60 @@ import musicImg from './asset/Image/images.jpg';
 import Slider from 'react-native-slider';
 import {song} from './data';
 
+import TrackPlayer,
+{Capability,
+  Event,
+  RepeatMode,
+  State,
+  usePlaybackState,
+  useProgress,
+  useTrackPlayerEvents
+} from 'react-native-track-player';
+
 
 
 const {width,height} =Dimensions.get('window')
 
+const setupPlayer= async()=>{
+  await TrackPlayer.setupPlayer();
+  await TrackPlayer.add(song)
+ }
+
+ const togglePlayback=async(playbackState)=>{
+   const currentTrack =await TrackPlayer.getCurrentTrack();
+
+   if(currentTrack !== null){
+     if(playbackState === State.Paused)
+     await TrackPlayer.play()
+   }
+   else{
+     await TrackPlayer.pause();
+   }
+ }
+
+
+
+
 const PlayScreen = () => {
-    
+  const playbackState =usePlaybackState();
+  const progress =useProgress()
   const songSlider =useRef(null)
   const [songIndex,setSongIndex] =useState(0)
   const scrollX=useRef(new Animated.Value(0)).current;
   
+  
+  const skipTo =async(trackId)=>{
+    await TrackPlayer.skip(trackId)
+  }
+
   useEffect(()=>{
+    setupPlayer();
      scrollX.addListener(({value})=>{
     //  console.log('Scroll X',scrollX)
     //  console.log('Device Width',scrollX.width)
      const index =Math.round(value/width)
     //  console.log('index:',index)
+    skipTo(index)
     setSongIndex(index)
      })
     return() =>{
@@ -31,12 +69,14 @@ const PlayScreen = () => {
     }
   },[]);
 
-   const skipNext =()=>{
-     songSlider.current.scrollTopOffset({
-       offset:(songIndex+1)*width,
-     })
-   }
    
+  const skipNext =()=>{
+    songSlider.current.scrollTopOffset({
+
+      offset:(songIndex +1)*width
+    })
+  }
+
    const skipPrevious =()=>{
     songSlider.current.scrollTopOffset({
       offset:(songIndex-1)*width,
@@ -47,6 +87,11 @@ const PlayScreen = () => {
       <Animated.View style={{
         width:width
       }}>
+
+      <View style={styles.imgbox}>
+        <Image source={item.image} style={styles.musicsImg} />
+      </View>
+
         <View style={styles.txtDesc}>
           <Feather name="music" size={25} style={styles.musicIcon} />
           <Text style={styles.Songname}>{song[songIndex].title}</Text>
@@ -58,23 +103,16 @@ const PlayScreen = () => {
 
   return (
     <View style={styles.body}>
-      <View style={styles.headTop}>
-        <View style={styles.header}>
-          <Feather
-            name="chevron-left"
-            size={30}
-            color="#fff"
-            style={styles.iconback}
-          />
-          <Text style={styles.txtback}>Back</Text>
-        </View>
-        <View style={styles.soundicon}>
-          <Entypo name="sound-mix" size={30} color="#fff" />
-        </View>
-      </View>
-      <View style={styles.imgbox}>
-        <Image source={musicImg} style={styles.musicsImg} />
-      </View>
+     <View style={styles.headTop}>
+  <View style={styles.header}>
+    <Feather name="chevron-left" size={30} color="#fff" style={styles.iconback} />
+    <Text style={styles.txtback}>Back</Text>
+  </View>
+  <View style={styles.soundicon}>
+  <Entypo name="sound-mix" size={30} color="#fff" />
+  </View>
+  </View>
+      
       <View style={styles.txtBox}>
         <View style={styles.detailbox}>
           <Animated.FlatList
@@ -98,17 +136,27 @@ const PlayScreen = () => {
       </View>
       <View style={styles.playsystem}>
         <View style={styles.backbtn}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>skipPrevious}>
           <AntDesign name="banckward" color="#ECCC68" size={35} />
           </TouchableOpacity>
         </View>
         <View style={styles.playbtn}>
-        <TouchableOpacity>
-          <AntDesign name="caretright" color="#000" size={40} />
+        <TouchableOpacity onPress={()=>togglePlayback(playbackState)}>
+          {
+
+              playbackState ===State.Playing?
+              <AntDesign name= "pause"  color="#000" size={40} onPress={()=>TrackPlayer.pause()}  />
+              :
+              <AntDesign name= "caretright"  color="#000" size={40} />
+
+          }
+
+            
+           
           </TouchableOpacity>
         </View>
         <View style={styles.nextbtn}>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={()=>skipNext} >
           <AntDesign name="forward" color="#ECCC68" size={35} />
           </TouchableOpacity>
         </View>
@@ -116,18 +164,20 @@ const PlayScreen = () => {
       <View style={styles.progressbox}>
         <Slider
           style={styles.progressContainer}
-          value={10}
-          minimumValue={10}
-          maximumValue={100}
+          value={progress.position}
+          minimumValue={0}
+          maximumValue={progress.duration}
           thumbTintColor="#ECCC68"
           minimumTrackTintColor="#ECCC68"
           miximumTrackTintColor="#fff"
-          onSlidingComplete={() => {}}
+          onSlidingComplete={async(value) => {
+            await TrackPlayer.seekTo(value)
+          }}
         />
       </View>
       <View style={styles.progressLabelContainer}>
-        <Text style={styles.progressLabelContainertxt}>0:00</Text>
-        <Text style={styles.progressLabelContainertxt}>0:00</Text>
+        <Text style={styles.progressLabelContainertxt}>{new Date(progress.position*1000).toISOString().substr(14,5)}</Text>
+        <Text style={styles.progressLabelContainertxt}>{new Date(progress.duration-progress.position*1000).toISOString().substr(14,5)}</Text>
       </View>
     </View>
   );
@@ -139,16 +189,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#383434',
   },
 
-  headTop: {
-    flexDirection: 'row',
-  },
-  header: {
-    flexDirection: 'row',
-    width: 270,
-    height: 50,
-    backgroundColor: '#000',
-    borderBottomRightRadius: 20,
-  },
+  headTop:{
+    flexDirection:"row"
+    
+   },
+   header:{
+     flexDirection:"row",
+     width:270,
+     height:50,
+     backgroundColor:"#000",
+     borderBottomRightRadius: 20,
+   },
   iconback: {
     marginTop: 10,
   },
@@ -156,12 +207,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 14,
   },
-  soundicon: {
-    marginLeft: 25,
-    marginRight: 25,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
+  soundicon:{
+    flexDirection:"row",
+    alignItems:"center",
+    justifyContent:"center",
+    marginLeft:20
   },
   imgbox: {
     flexDirection: 'row',

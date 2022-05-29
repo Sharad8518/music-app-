@@ -1,11 +1,30 @@
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image,FlatList} from 'react-native';
 import React from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import musicImg from './asset/Image/images.jpg';
-
+import { song } from './data'
 
 const Home = () => {
+
+
+const renderSong =({index,item}) =>{
+
+  return(
+
+    <View style={styles.cardlineGroup}>
+    <View style={styles.cardline}>
+      <Image source={item.image} style={styles.cdlimg} />
+      <View style={styles.cdltxt}>
+        <Text style={styles.cdltitle}>{item.title}</Text>
+        <Text style={styles.cdlDesc}>{item.album}</Text>
+      </View>
+  
+    </View>
+  </View>
+
+  )
+}
   return (
     <View style={styles.body}>
       <View style={styles.card1}>
@@ -46,87 +65,12 @@ const Home = () => {
           </View>
         </View>
       </View>
-      <View style={styles.cardlineGroup}>
-        <View style={styles.cardline}>
-          <Image source={musicImg} style={styles.cdlimg} />
-          <View style={styles.cdltxt}>
-            <Text style={styles.cdltitle}>Teri Ada</Text>
-            <Text style={styles.cdlDesc}>Mohit Chouhan</Text>
-          </View>
-          <AntDesign
-            name="heart"
-            size={30}
-            color="#fff"
-            style={styles.Cdlhearticon}
-          />
-          <Entypo
-            name="dots-three-vertical"
-            size={25}
-            color="#fff"
-            style={styles.cldthree}
-          />
-        </View>
-
-        <View style={styles.cardline}>
-          <Image source={musicImg} style={styles.cdlimg} />
-          <View style={styles.cdltxt}>
-            <Text style={styles.cdltitle}>Teri Ada</Text>
-            <Text style={styles.cdlDesc}>Mohit Chouhan</Text>
-          </View>
-          <AntDesign
-            name="heart"
-            size={30}
-            color="#fff"
-            style={styles.Cdlhearticon}
-          />
-          <Entypo
-            name="dots-three-vertical"
-            size={25}
-            color="#fff"
-            style={styles.cldthree}
-          />
-        </View>
-
-        <View style={styles.cardline}>
-          <Image source={musicImg} style={styles.cdlimg} />
-          <View style={styles.cdltxt}>
-            <Text style={styles.cdltitle}>Teri Ada</Text>
-            <Text style={styles.cdlDesc}>Mohit Chouhan</Text>
-          </View>
-          <AntDesign
-            name="heart"
-            size={30}
-            color="#fff"
-            style={styles.Cdlhearticon}
-          />
-          <Entypo
-            name="dots-three-vertical"
-            size={25}
-            color="#fff"
-            style={styles.cldthree}
-          />
-        </View>
-
-        <View style={styles.cardline}>
-          <Image source={musicImg} style={styles.cdlimg} />
-          <View style={styles.cdltxt}>
-            <Text style={styles.cdltitle}>Teri Ada</Text>
-            <Text style={styles.cdlDesc}>Mohit Chouhan</Text>
-          </View>
-          <AntDesign
-            name="heart"
-            size={30}
-            color="#fff"
-            style={styles.Cdlhearticon}
-          />
-          <Entypo
-            name="dots-three-vertical"
-            size={25}
-            color="#fff"
-            style={styles.cldthree}
-          />
-        </View>
-      </View>
+   <FlatList
+   data={song}
+   renderItem={renderSong}
+   keyExtractor={item=>item.id}
+   />
+     
     </View>
   );
 };
@@ -219,12 +163,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: 15,
   },
   cardline: {
     width: 340,
     height: 60,
-    marginTop: 20,
+    marginTop: 0,
     backgroundColor: '#000',
     flexDirection: 'row',
     borderRadius: 50,
@@ -255,7 +199,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   cdlDesc: {
-    color: '#fff',
+    color: '#ECCC68',
     marginLeft: 20,
   },
   Cdlhearticon: {

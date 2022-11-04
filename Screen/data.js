@@ -4,7 +4,7 @@ export const song = [
       url: 'https://pagalnew.com/mp3-songs/bollywood-mp3-songs/maiyya-mainu-jersey-128-kbps-sound.mp3',
       title: 'Maiyya Mainu',
       artist: 'Sachet Tandon',
-      album: "Shahid Kapoor, Mrunal Thakur",
+      album: "jerrsy",
       genre: 'Sachet - Parampara',
       date: '2021-08-20T07:00:00+00:00', // RFC 3339
       image: require("./asset/Image/jersy.jpg"),

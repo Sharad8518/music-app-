@@ -6,7 +6,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import musicImg from './asset/Image/images.jpg';
 import Slider from 'react-native-slider';
-import {song} from './data';
 
 import TrackPlayer,
 {Capability,
@@ -17,6 +16,8 @@ import TrackPlayer,
   useProgress,
   useTrackPlayerEvents
 } from 'react-native-track-player';
+import { song2 } from './data2';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -24,7 +25,7 @@ const {width,height} =Dimensions.get('window')
 
 const setupPlayer= async()=>{
   await TrackPlayer.setupPlayer();
-  await TrackPlayer.add(song)
+  await TrackPlayer.add(song2)
  }
 
  const togglePlayback=async(playbackState)=>{
@@ -41,8 +42,8 @@ const setupPlayer= async()=>{
 
 
 
-
-const PlayScreen = () => {
+  
+const PlayScreen = ({navigation}) => {
   const playbackState =usePlaybackState();
   const progress =useProgress()
   const songSlider =useRef(null)
@@ -94,9 +95,9 @@ const PlayScreen = () => {
 
         <View style={styles.txtDesc}>
           <Feather name="music" size={25} style={styles.musicIcon} />
-          <Text style={styles.Songname}>{song[songIndex].title}</Text>
+          <Text style={styles.Songname}>{song2[songIndex].title}</Text>
         </View>
-        <Text style={styles.txtNameSinger}>{song[songIndex].artist} & {song[songIndex].album}</Text>
+        <Text style={styles.txtNameSinger}>{song2[songIndex].artist}  {song2[songIndex].album}</Text>
       </Animated.View>
     );
   };
@@ -105,7 +106,7 @@ const PlayScreen = () => {
     <View style={styles.body}>
      <View style={styles.headTop}>
   <View style={styles.header}>
-    <Feather name="chevron-left" size={30} color="#fff" style={styles.iconback} />
+    <Feather name="chevron-left" size={30} color="#fff" style={styles.iconback} onPress={()=>navigation.goBack()}/>
     <Text style={styles.txtback}>Back</Text>
   </View>
   <View style={styles.soundicon}>
@@ -117,7 +118,7 @@ const PlayScreen = () => {
         <View style={styles.detailbox}>
           <Animated.FlatList
            ref={songSlider}
-            data={song}
+            data={song2}
             renderItem={renderSong}
             keyExtractor={item => item.id}
             horizontal
